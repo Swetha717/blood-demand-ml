@@ -1,0 +1,42 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+def train_model():
+    data = pd.read_csv("data/blood_data.csv")
+
+    X = data[['month', 'emergencies', 'prev_demand']]
+    y = data['units_required']
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    return model
+
+def predict():
+    model = train_model()
+
+    print("\n--- Blood Demand Prediction ---")
+
+    month = int(input("Enter month (1-12): "))
+    emergencies = int(input("Enter emergencies: "))
+    prev_demand = int(input("Enter previous demand: "))
+
+    prediction = model.predict([[month, emergencies, prev_demand]])
+    predicted_units = int(prediction[0])
+
+    print(f"\nPredicted Blood Units Required: {predicted_units}")
+
+    available = int(input("Enter available units: "))
+
+    if available < predicted_units:
+        print("⚠️ ALERT: Blood shortage expected!")
+    else:
+        print("✅ Sufficient blood available")
+
+if __name__ == "__main__":
+    predict()
